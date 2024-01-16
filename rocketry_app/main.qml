@@ -52,6 +52,48 @@ Window {
         return adjustedFontSize;
     }
 
+    function createChargeBar() {
+        var component = Qt.createComponent("barObject.qml")
+
+        for (var i = 0; i < voltage_cell.barsNum; i++) {
+
+            voltage_cell.bar_list.push(component.createObject(voltage_cell))
+            // TODO: REFACTORING
+            if (i > 20 && i < 24){
+              voltage_cell.bar_list[i].color = "orange"
+            }
+            else if (i > 23 && i < 27){
+               voltage_cell.bar_list[i].color = "yellow"
+            }
+            else if(i > 26 && i < 30){
+                voltage_cell.bar_list[i].color = "green"
+            }
+
+
+            // We use Qt.binding, in order to bind properties in JS. Primarly it doesn't bind properties dynamically.
+            // Make the initial indent from the left edge of the parent object
+            if (i == 0) {
+                voltage_cell.bar_list[i].anchors.left = voltage_cell.left
+                voltage_cell.bar_list[i].anchors.leftMargin =  Qt.binding(function() { return voltage_cell.barInitialIndent })
+            }
+            // Place other bars right after each other with the specified gap
+            else {
+                voltage_cell.bar_list[i].anchors.left = voltage_cell.bar_list[i - 1].right
+                voltage_cell.bar_list[i].anchors.leftMargin = Qt.binding(function() { return voltage_cell.barBetweenGap })
+            }
+        }
+    }
+
+    function createChargeBarIfInitialized() {
+        if (voltage_cell.width !== 0 && voltage_cell.height !== 0) {
+            createChargeBar()
+        } else {
+            // Retry function call after a short delay if width or height is zero
+            // Adjust the delay (e.g., 100) based on your application's needs
+            Qt.callLater(createChargeBarIfInitialized, 100)
+        }
+    }
+
     // setup a timer to update time string every second
     Timer {
         interval: 1000
@@ -86,7 +128,6 @@ Window {
             Layout.preferredWidth : mainWindow.width / 4
             Layout.preferredHeight: mainWindow.height / 4
 
-
             ColumnLayout{
                 id: time_voltage_layout
                 // Make a layout size equals to the item's size
@@ -116,9 +157,9 @@ Window {
 
                         color: "White"
 
-                        anchors.top: parent.top
+                        anchors.top: time_cell.top
                         anchors.topMargin: time_cell.height * 0.05
-                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.horizontalCenter: time_cell.horizontalCenter
                     }
                     Text {
                         id: time_string
@@ -130,7 +171,6 @@ Window {
                         color: "White"
                         anchors.centerIn: parent
                     }
-
 
                 }
                 Rectangle{
@@ -146,7 +186,40 @@ Window {
 
                     border.width: 1
                     border.color: "steelblue"
-                    radius: time_cell.width * 0.01
+                    radius: voltage_cell.width * 0.01
+
+                    property int barsNum: 30
+                    property real barInitialIndent: voltage_cell.width * 0.02
+                    property real barBetweenGap: voltage_cell.width * 0.005
+                    property list<Item> bar_list
+
+                    Text {
+                        text: "Voltage"
+
+                        font.family: "Helvetica"
+                        font.pointSize: adjustFontSizeToRectangle(12, voltage_cell.width * 0.2, voltage_cell.height * 0.2, "Time");
+
+                        color: "White"
+
+                        anchors.top: voltage_cell.top
+                        anchors.topMargin: voltage_cell.height * 0.1
+                        anchors.horizontalCenter: voltage_cell.horizontalCenter
+                    }
+
+                    Text {
+                        id: voltage_string
+                        anchors.right: voltage_cell.right
+                        anchors.verticalCenter: voltage_cell.verticalCenter
+                        anchors.verticalCenterOffset: voltage_cell.height / 6
+                        text: "4.98V"
+                        font.family: "Helvetica"
+                        font.pointSize: adjustFontSizeToRectangle(10, voltage_cell.width * 0.15, voltage_cell.height / 2, voltage_string.text);
+                        color: "green"
+                        anchors.rightMargin: voltage_cell.height / 12
+                    }
+
+                    Component.onCompleted: createChargeBarIfInitialized()
+
                 }
             }
         }
