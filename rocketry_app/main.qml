@@ -1,7 +1,8 @@
 import QtQuick 2.6
 import QtQuick.Window 2.2
 import QtQuick.Layouts 1.3
-import QtQuick.Controls 2.5
+import QtQuick.Controls 2.6
+import QtCharts 2.1
 
 // Usefull resources
 // Layouts: https://www.dmcinfo.com/latest-thinking/blog/id/10393/resizing-uis-with-qml-layouts
@@ -11,7 +12,7 @@ Window {
     visible: true
     visibility: "Maximized"
     color: "Black"
-    title: qsTr("Hello World")
+    title: qsTr("Ground control software")
 
     function getCurrentTime() {
         var now = new Date()
@@ -60,10 +61,10 @@ Window {
             voltage_cell.bar_list.push(component.createObject(voltage_cell))
             // TODO: REFACTORING
             if (i > 20 && i < 24){
-              voltage_cell.bar_list[i].color = "orange"
+                voltage_cell.bar_list[i].color = "orange"
             }
             else if (i > 23 && i < 27){
-               voltage_cell.bar_list[i].color = "yellow"
+                voltage_cell.bar_list[i].color = "yellow"
             }
             else if(i > 26 && i < 30){
                 voltage_cell.bar_list[i].color = "green"
@@ -93,6 +94,8 @@ Window {
             Qt.callLater(createChargeBarIfInitialized, 100)
         }
     }
+
+
 
     // setup a timer to update time string every second
     Timer {
@@ -237,8 +240,64 @@ Window {
             Layout.preferredWidth : mainWindow.width / 4
             Layout.preferredHeight: mainWindow.height / 4
 
-            color: "orange"
+            color: "#181b1f"
 
+            border.width: 1
+            border.color: "steelblue"
+            radius: altitude_plot_cell.width * 0.01
+
+
+            ChartView {
+                id: altitude_plot
+                anchors.fill: parent
+                margins { top: 0; bottom: 0; left: 0; right: 0 }
+
+                title: "Altitude plot"
+                titleColor: "white"
+                titleFont.family: "Helvetica"
+                titleFont.pointSize: 15
+
+
+                antialiasing: true
+                legend.visible:false // Remove legend of the line
+
+                backgroundColor: "#181b1f"
+                ValueAxis {
+                    id: x_axis_altitude
+                    min: 0;
+                    max: 100;
+                    color : "white"
+                    gridLineColor: "white"
+                    labelsColor : "white"
+                    lineVisible: false
+                    labelFormat: "%.2f"
+                    titleText: "<font color='white'>Time [s]</font>"
+                }
+                ValueAxis {
+                    id: y_axis_altitude
+                    min: 0;
+                    max: 100;
+                    color : "white"
+                    gridLineColor: "white"
+                    labelsColor : "white"
+                    lineVisible: false
+                    labelFormat: "%.2f"
+                    titleText: "<font color='white'>Altitude [m]</font>"
+
+                }
+
+                LineSeries {
+                    axisX: x_axis_altitude
+                    axisY: y_axis_altitude
+                    XYPoint { x: 0; y: 0 }
+                    XYPoint { x: 1.1; y: 2.1 }
+                    XYPoint { x: 5.9; y: 43.3 }
+                    XYPoint { x: 26.1; y: 45.1 }
+                    XYPoint { x: 55.9; y: 77.9 }
+                    XYPoint { x: 68.4; y: 88.0 }
+                    XYPoint { x: 92.1; y: 32.3 }
+                }
+            }
         }
         Rectangle{
             id: acceleration_plot_cell
@@ -254,7 +313,64 @@ Window {
             Layout.preferredWidth : mainWindow.width / 4
             Layout.preferredHeight: mainWindow.height / 4
 
-            color: "orange"
+            color: "#181b1f"
+
+            border.width: 1
+            border.color: "steelblue"
+            radius: acceleration_plot_cell.width * 0.01
+
+            ChartView {
+                id: acceleration_plot
+                anchors.fill: parent
+                margins { top: 0; bottom: 0; left: 0; right: 0 }
+
+                title: "Acceleration plot"
+                titleColor: "white"
+                titleFont.family: "Helvetica"
+                titleFont.pointSize: 15
+
+
+                antialiasing: true
+                legend.visible:false // Remove legend of the line
+
+                backgroundColor: "#181b1f"
+                ValueAxis {
+                    id: x_axis_acceleration
+                    min: 0;
+                    max: 100;
+                    color : "white"
+                    gridLineColor: "white"
+                    labelsColor : "white"
+                    lineVisible: false
+                    labelFormat: "%.2f"
+                    titleText: "<font color='white'>Time [s]</font>"
+                }
+                ValueAxis {
+                    id: y_axis_acceleration
+                    min: 0;
+                    max: 100;
+                    color : "white"
+                    gridLineColor: "white"
+                    labelsColor : "white"
+                    lineVisible: false
+                    labelFormat: "%.2f"
+                    titleText: "<font color='white'>Acceleration [m/s2]</font>"
+
+                }
+
+                LineSeries {
+                    axisX: x_axis_acceleration
+                    axisY: y_axis_acceleration
+                    XYPoint { x: 0; y: 0 }
+                    XYPoint { x: 1.1; y: 2.1 }
+                    XYPoint { x: 1.9; y: 3.3 }
+                    XYPoint { x: 2.1; y: 2.1 }
+                    XYPoint { x: 2.9; y: 4.9 }
+                    XYPoint { x: 3.4; y: 3.0 }
+                    XYPoint { x: 4.1; y: 3.3 }
+                }
+            }
+
 
         }
         Rectangle{
@@ -348,7 +464,7 @@ Window {
             color: "white"
         }
         Rectangle{
-            id: control_buttons_cell
+            id: connection_settings_cell
             // Position in the grid
             Layout.row: 3
             Layout.column: 2
@@ -364,7 +480,105 @@ Window {
             Layout.preferredWidth : mainWindow.width / 2
             Layout.preferredHeight: mainWindow.height / 4
 
-            color: "white"
+            color: "#181b1f"
+
+            border.width: 1
+            border.color: "steelblue"
+            radius: acceleration_plot_cell.width * 0.01
+
+            TabBar {
+                id: bar
+                width: parent.width
+                 anchors.fill: parent
+                background:
+                    Rectangle{
+                    color: 'black'
+                    border.color: "steelblue"
+                    radius: 5
+                }
+
+                TabButton {
+                    id: connectionSettingsButton
+
+                    property color checkedColor: connectionSettingsButton.checked ? "white" : "#353637"
+                    property color pressedColor: connectionSettingsButton.checked ? "#dedede" : "#797a7a"
+
+                    contentItem: Text {
+                        text: qsTr("Connection settings")
+                        color: parent.checked ? "black" : "white"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        elide: Text.ElideRight
+                    }
+
+                    background: Rectangle {
+
+                        implicitWidth: 100
+                        implicitHeight: 40
+
+                        color: connectionSettingsButton.pressed ? connectionSettingsButton.pressedColor : connectionSettingsButton.checkedColor
+
+//                        border.color: "steelblue"
+//                        border.width: 1
+//                        radius: 10
+                    }
+                }
+                TabButton {
+                    id: fileSettingsButton
+
+                    property color checkedColor: fileSettingsButton.checked ? "white" : "#353637"
+                    property color pressedColor: fileSettingsButton.checked ? "#dedede" : "#797a7a"
+
+                    contentItem: Text {
+                        text: qsTr("Connection settings")
+                        color: parent.checked ? "black" : "white"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        elide: Text.ElideRight
+                    }
+
+                    background: Rectangle {
+
+                        implicitWidth: 100
+                        implicitHeight: 40
+
+                        color: fileSettingsButton.pressed ? fileSettingsButton.pressedColor : fileSettingsButton.checkedColor
+
+                      border.color: "steelblue"
+                      border.width: 1
+
+                    }
+                }
+                TabButton {
+                    id: inFutureButton
+
+                    property color checkedColor: inFutureButton.checked ? "white" : "#353637"
+                    property color pressedColor: inFutureButton.checked ? "#dedede" : "#797a7a"
+
+                    contentItem: Text {
+                        text: qsTr("Connection settings")
+                        color: parent.checked ? "black" : "white"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        elide: Text.ElideRight
+                    }
+
+                    background: Rectangle {
+
+                        implicitWidth: 100
+                        implicitHeight: 40
+
+                        color: inFutureButton.pressed ? inFutureButton.pressedColor : inFutureButton.checkedColor
+
+//                        border.color: "steelblue"
+//                        border.width: 1
+//                        radius: 10
+                    }
+                }
+
+            }
+
+
         }
     }
 
