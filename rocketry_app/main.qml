@@ -489,7 +489,7 @@ Window {
             TabBar {
                 id: bar
                 width: parent.width
-                 anchors.fill: parent
+                anchors.fill: parent
                 background:
                     Rectangle{
                     color: 'black'
@@ -511,17 +511,105 @@ Window {
                         elide: Text.ElideRight
                     }
 
-                    background: Rectangle {
+                    background:
+                        // Now it has the following shape
+                        Rectangle {
 
                         implicitWidth: 100
                         implicitHeight: 40
 
                         color: connectionSettingsButton.pressed ? connectionSettingsButton.pressedColor : connectionSettingsButton.checkedColor
 
-//                        border.color: "steelblue"
-//                        border.width: 1
-//                        radius: 10
-                    }
+                        border.color: "steelblue"
+                        border.width: 1
+                        radius: acceleration_plot_cell.width * 0.01
+
+                            Rectangle{
+                                implicitWidth: acceleration_plot_cell.width * 0.01
+                                implicitHeight: acceleration_plot_cell.width * 0.01
+                                x: parent.x
+                                y: parent.y + parent.height - parent.radius
+                                color: connectionSettingsButton.pressed ? connectionSettingsButton.pressedColor : connectionSettingsButton.checkedColor
+                            }
+                            Rectangle{
+                                implicitWidth: parent.border.width
+                                implicitHeight: acceleration_plot_cell.width * 0.01
+                                x: parent.x
+                                y: parent.y + parent.height - acceleration_plot_cell.width * 0.01
+
+                                color: "transparent"
+                                border.color: "steelblue"
+                                border.width: 1
+                            }
+                            Rectangle{
+                                implicitWidth: acceleration_plot_cell.width * 0.01
+                                implicitHeight: parent.border.width
+                                x: parent.x
+                                y: parent.y + parent.height - parent.border.width
+
+                                color: "transparent"
+                                border.color: "steelblue"
+                                border.width: 1
+                            }
+                            Rectangle{
+                                implicitWidth: acceleration_plot_cell.width * 0.01
+                                implicitHeight: acceleration_plot_cell.width * 0.01
+                                x: parent.x + parent.width - parent.radius
+                                y: parent.y
+                                color: connectionSettingsButton.pressed ? connectionSettingsButton.pressedColor : connectionSettingsButton.checkedColor
+                            }
+
+                            Rectangle{
+                                implicitWidth: acceleration_plot_cell.width * 0.01
+                                implicitHeight: parent.border.width
+                                x: parent.x + parent.width - parent.radius
+                                y: parent.y
+
+                                color: "transparent"
+                                border.color: "steelblue"
+                                border.width: 1
+                            }
+
+                            Rectangle{
+                                implicitWidth: parent.border.width
+                                implicitHeight: acceleration_plot_cell.width * 0.01
+                                x: parent.x + parent.width - parent.radius + acceleration_plot_cell.width * 0.01 - parent.border.width
+                                y: parent.y
+
+                                color: "transparent"
+                                border.color: "steelblue"
+                                border.width: 1
+                            }
+
+                            Rectangle{
+                                implicitWidth: acceleration_plot_cell.width * 0.01
+                                implicitHeight: acceleration_plot_cell.width * 0.01
+                                x: parent.x + parent.width - parent.radius
+                                y: parent.y + parent.height - parent.radius
+                                color: connectionSettingsButton.pressed ? connectionSettingsButton.pressedColor : connectionSettingsButton.checkedColor
+                            }
+
+                            Rectangle{
+                                implicitWidth: acceleration_plot_cell.width * 0.01
+                                implicitHeight: parent.border.width
+                                x: parent.x + parent.width - parent.radius
+                                y: parent.y + parent.height - parent.radius + acceleration_plot_cell.width * 0.01 - parent.border.width
+
+                                color: "transparent"
+                                border.color: "steelblue"
+                                border.width: 1
+                            }
+                            Rectangle{
+                                implicitWidth: parent.border.width
+                                implicitHeight: acceleration_plot_cell.width * 0.01
+                                x: parent.x + parent.width - parent.radius + acceleration_plot_cell.width * 0.01 - parent.border.width
+                                y: parent.y + parent.height - parent.radius
+
+                                color: "transparent"
+                                border.color: "steelblue"
+                                border.width: 1
+                            }
+                        }
                 }
                 TabButton {
                     id: fileSettingsButton
@@ -530,7 +618,7 @@ Window {
                     property color pressedColor: fileSettingsButton.checked ? "#dedede" : "#797a7a"
 
                     contentItem: Text {
-                        text: qsTr("Connection settings")
+                        text: qsTr("File settings")
                         color: parent.checked ? "black" : "white"
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
@@ -544,8 +632,8 @@ Window {
 
                         color: fileSettingsButton.pressed ? fileSettingsButton.pressedColor : fileSettingsButton.checkedColor
 
-                      border.color: "steelblue"
-                      border.width: 1
+                        border.color: "steelblue"
+                        border.width: 1
 
                     }
                 }
@@ -556,7 +644,7 @@ Window {
                     property color pressedColor: inFutureButton.checked ? "#dedede" : "#797a7a"
 
                     contentItem: Text {
-                        text: qsTr("Connection settings")
+                        text: qsTr("In future")
                         color: parent.checked ? "black" : "white"
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
@@ -570,9 +658,93 @@ Window {
 
                         color: inFutureButton.pressed ? inFutureButton.pressedColor : inFutureButton.checkedColor
 
-//                        border.color: "steelblue"
-//                        border.width: 1
-//                        radius: 10
+                        border.color: "steelblue"
+                        border.width: 1
+                        radius: acceleration_plot_cell.width * 0.01
+
+
+                        Rectangle{
+                            implicitWidth: acceleration_plot_cell.width * 0.01
+                            implicitHeight: acceleration_plot_cell.width * 0.01
+                            x: parent.x
+                            y: parent.y
+                            color: inFutureButton.pressed ? inFutureButton.pressedColor : inFutureButton.checkedColor
+                        }
+
+                        Rectangle{
+                            implicitWidth: parent.border.width
+                            implicitHeight: acceleration_plot_cell.width * 0.01
+                            x: parent.x
+                            y: parent.y
+                            color: "transparent"
+                            border.color: "steelblue"
+                            border.width: 1
+                        }
+                        Rectangle{
+                            implicitWidth: acceleration_plot_cell.width * 0.01
+                            implicitHeight: parent.border.width
+                            x: parent.x
+                            y: parent.y
+                            color: "transparent"
+                            border.color: "steelblue"
+                            border.width: 1
+                        }
+                        Rectangle{
+                            implicitWidth: acceleration_plot_cell.width * 0.01
+                            implicitHeight: acceleration_plot_cell.width * 0.01
+                            x: parent.x
+                            y: parent.y + parent.height - parent.radius
+                            color: inFutureButton.pressed ? inFutureButton.pressedColor : inFutureButton.checkedColor
+                        }
+
+                        Rectangle{
+                            implicitWidth: parent.border.width
+                            implicitHeight: acceleration_plot_cell.width * 0.01
+                            x: parent.x
+                            y: parent.y + parent.height - acceleration_plot_cell.width * 0.01
+
+                            color: "transparent"
+                            border.color: "steelblue"
+                            border.width: 1
+                        }
+                        Rectangle{
+                            implicitWidth: acceleration_plot_cell.width * 0.01
+                            implicitHeight: parent.border.width
+                            x: parent.x
+                            y: parent.y + parent.height - parent.border.width
+
+                            color: "transparent"
+                            border.color: "steelblue"
+                            border.width: 1
+                        }
+                        Rectangle{
+                            implicitWidth: acceleration_plot_cell.width * 0.01
+                            implicitHeight: acceleration_plot_cell.width * 0.01
+                            x: parent.x + parent.width - parent.radius
+                            y: parent.y + parent.height - parent.radius
+                            color: inFutureButton.pressed ? inFutureButton.pressedColor : inFutureButton.checkedColor
+                        }
+
+                        Rectangle{
+                            implicitWidth: acceleration_plot_cell.width * 0.01
+                            implicitHeight: parent.border.width
+                            x: parent.x + parent.width - parent.radius
+                            y: parent.y + parent.height - parent.radius + acceleration_plot_cell.width * 0.01 - parent.border.width
+
+                            color: "transparent"
+                            border.color: "steelblue"
+                            border.width: 1
+                        }
+                        Rectangle{
+                            implicitWidth: parent.border.width
+                            implicitHeight: acceleration_plot_cell.width * 0.01
+                            x: parent.x + parent.width - parent.radius + acceleration_plot_cell.width * 0.01 - parent.border.width
+                            y: parent.y + parent.height - parent.radius
+
+                            color: "transparent"
+                            border.color: "steelblue"
+                            border.width: 1
+                        }
                     }
                 }
 
