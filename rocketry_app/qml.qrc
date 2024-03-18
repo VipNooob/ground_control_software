@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>barObject.qml</file>
+        <file>CustomBatteryBar.qml</file>
+        <file>CustomComboBox.qml</file>
     </qresource>
 </RCC>

@@ -3,6 +3,7 @@ import QtQuick.Window 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.6
 import QtCharts 2.1
+import Backend 1.0
 
 // Usefull resources
 // Layouts: https://www.dmcinfo.com/latest-thinking/blog/id/10393/resizing-uis-with-qml-layouts
@@ -13,6 +14,14 @@ Window {
     visibility: "Maximized"
     color: "Black"
     title: qsTr("Ground control software")
+
+    // Connected slots to Backend signals
+    Connections {
+        target: Sinstance
+        onSendSerialPortsInfo: {
+            console.log(portsInfo[0].portName);
+        }
+    }
 
     function getCurrentTime() {
         var now = new Date()
@@ -54,7 +63,7 @@ Window {
     }
 
     function createChargeBar() {
-        var component = Qt.createComponent("barObject.qml")
+        var component = Qt.createComponent("CustomBatteryBar.qml")
 
         for (var i = 0; i < voltage_cell.barsNum; i++) {
 
@@ -94,8 +103,6 @@ Window {
             Qt.callLater(createChargeBarIfInitialized, 100)
         }
     }
-
-
 
     // setup a timer to update time string every second
     Timer {
@@ -487,9 +494,10 @@ Window {
             radius: acceleration_plot_cell.width * 0.01
 
             TabBar {
-                id: bar
+                id: tab_bar
                 width: parent.width
                 anchors.fill: parent
+                property int stack_index: 0
                 background:
                     Rectangle{
                     color: 'black'
@@ -524,92 +532,93 @@ Window {
                         border.width: 1
                         radius: acceleration_plot_cell.width * 0.01
 
-                            Rectangle{
-                                implicitWidth: acceleration_plot_cell.width * 0.01
-                                implicitHeight: acceleration_plot_cell.width * 0.01
-                                x: parent.x
-                                y: parent.y + parent.height - parent.radius
-                                color: connectionSettingsButton.pressed ? connectionSettingsButton.pressedColor : connectionSettingsButton.checkedColor
-                            }
-                            Rectangle{
-                                implicitWidth: parent.border.width
-                                implicitHeight: acceleration_plot_cell.width * 0.01
-                                x: parent.x
-                                y: parent.y + parent.height - acceleration_plot_cell.width * 0.01
-
-                                color: "transparent"
-                                border.color: "steelblue"
-                                border.width: 1
-                            }
-                            Rectangle{
-                                implicitWidth: acceleration_plot_cell.width * 0.01
-                                implicitHeight: parent.border.width
-                                x: parent.x
-                                y: parent.y + parent.height - parent.border.width
-
-                                color: "transparent"
-                                border.color: "steelblue"
-                                border.width: 1
-                            }
-                            Rectangle{
-                                implicitWidth: acceleration_plot_cell.width * 0.01
-                                implicitHeight: acceleration_plot_cell.width * 0.01
-                                x: parent.x + parent.width - parent.radius
-                                y: parent.y
-                                color: connectionSettingsButton.pressed ? connectionSettingsButton.pressedColor : connectionSettingsButton.checkedColor
-                            }
-
-                            Rectangle{
-                                implicitWidth: acceleration_plot_cell.width * 0.01
-                                implicitHeight: parent.border.width
-                                x: parent.x + parent.width - parent.radius
-                                y: parent.y
-
-                                color: "transparent"
-                                border.color: "steelblue"
-                                border.width: 1
-                            }
-
-                            Rectangle{
-                                implicitWidth: parent.border.width
-                                implicitHeight: acceleration_plot_cell.width * 0.01
-                                x: parent.x + parent.width - parent.radius + acceleration_plot_cell.width * 0.01 - parent.border.width
-                                y: parent.y
-
-                                color: "transparent"
-                                border.color: "steelblue"
-                                border.width: 1
-                            }
-
-                            Rectangle{
-                                implicitWidth: acceleration_plot_cell.width * 0.01
-                                implicitHeight: acceleration_plot_cell.width * 0.01
-                                x: parent.x + parent.width - parent.radius
-                                y: parent.y + parent.height - parent.radius
-                                color: connectionSettingsButton.pressed ? connectionSettingsButton.pressedColor : connectionSettingsButton.checkedColor
-                            }
-
-                            Rectangle{
-                                implicitWidth: acceleration_plot_cell.width * 0.01
-                                implicitHeight: parent.border.width
-                                x: parent.x + parent.width - parent.radius
-                                y: parent.y + parent.height - parent.radius + acceleration_plot_cell.width * 0.01 - parent.border.width
-
-                                color: "transparent"
-                                border.color: "steelblue"
-                                border.width: 1
-                            }
-                            Rectangle{
-                                implicitWidth: parent.border.width
-                                implicitHeight: acceleration_plot_cell.width * 0.01
-                                x: parent.x + parent.width - parent.radius + acceleration_plot_cell.width * 0.01 - parent.border.width
-                                y: parent.y + parent.height - parent.radius
-
-                                color: "transparent"
-                                border.color: "steelblue"
-                                border.width: 1
-                            }
+                        Rectangle{
+                            implicitWidth: acceleration_plot_cell.width * 0.01
+                            implicitHeight: acceleration_plot_cell.width * 0.01
+                            x: parent.x
+                            y: parent.y + parent.height - parent.radius
+                            color: connectionSettingsButton.pressed ? connectionSettingsButton.pressedColor : connectionSettingsButton.checkedColor
                         }
+                        Rectangle{
+                            implicitWidth: parent.border.width
+                            implicitHeight: acceleration_plot_cell.width * 0.01
+                            x: parent.x
+                            y: parent.y + parent.height - acceleration_plot_cell.width * 0.01
+
+                            color: "transparent"
+                            border.color: "steelblue"
+                            border.width: 1
+                        }
+                        Rectangle{
+                            implicitWidth: acceleration_plot_cell.width * 0.01
+                            implicitHeight: parent.border.width
+                            x: parent.x
+                            y: parent.y + parent.height - parent.border.width
+
+                            color: "transparent"
+                            border.color: "steelblue"
+                            border.width: 1
+                        }
+                        Rectangle{
+                            implicitWidth: acceleration_plot_cell.width * 0.01
+                            implicitHeight: acceleration_plot_cell.width * 0.01
+                            x: parent.x + parent.width - parent.radius
+                            y: parent.y
+                            color: connectionSettingsButton.pressed ? connectionSettingsButton.pressedColor : connectionSettingsButton.checkedColor
+                        }
+
+                        Rectangle{
+                            implicitWidth: acceleration_plot_cell.width * 0.01
+                            implicitHeight: parent.border.width
+                            x: parent.x + parent.width - parent.radius
+                            y: parent.y
+
+                            color: "transparent"
+                            border.color: "steelblue"
+                            border.width: 1
+                        }
+
+                        Rectangle{
+                            implicitWidth: parent.border.width
+                            implicitHeight: acceleration_plot_cell.width * 0.01
+                            x: parent.x + parent.width - parent.radius + acceleration_plot_cell.width * 0.01 - parent.border.width
+                            y: parent.y
+
+                            color: "transparent"
+                            border.color: "steelblue"
+                            border.width: 1
+                        }
+
+                        Rectangle{
+                            implicitWidth: acceleration_plot_cell.width * 0.01
+                            implicitHeight: acceleration_plot_cell.width * 0.01
+                            x: parent.x + parent.width - parent.radius
+                            y: parent.y + parent.height - parent.radius
+                            color: connectionSettingsButton.pressed ? connectionSettingsButton.pressedColor : connectionSettingsButton.checkedColor
+                        }
+
+                        Rectangle{
+                            implicitWidth: acceleration_plot_cell.width * 0.01
+                            implicitHeight: parent.border.width
+                            x: parent.x + parent.width - parent.radius
+                            y: parent.y + parent.height - parent.radius + acceleration_plot_cell.width * 0.01 - parent.border.width
+
+                            color: "transparent"
+                            border.color: "steelblue"
+                            border.width: 1
+                        }
+                        Rectangle{
+                            implicitWidth: parent.border.width
+                            implicitHeight: acceleration_plot_cell.width * 0.01
+                            x: parent.x + parent.width - parent.radius + acceleration_plot_cell.width * 0.01 - parent.border.width
+                            y: parent.y + parent.height - parent.radius
+
+                            color: "transparent"
+                            border.color: "steelblue"
+                            border.width: 1
+                        }
+                    }
+                    onClicked: tab_bar.stack_index = 0;
                 }
                 TabButton {
                     id: fileSettingsButton
@@ -636,6 +645,7 @@ Window {
                         border.width: 1
 
                     }
+                    onClicked: tab_bar.stack_index = 1;
                 }
                 TabButton {
                     id: inFutureButton
@@ -746,12 +756,130 @@ Window {
                             border.width: 1
                         }
                     }
+                    onClicked: tab_bar.stack_index = 2;
+                }
+            }
+
+            StackLayout {
+                x: parent.border.width
+                y: connectionSettingsButton.y + connectionSettingsButton.height
+                width: parent.width - parent.border.width * 2 - parent.border.width
+                height: parent.height - parent.border.width * 2  - connectionSettingsButton.height
+                currentIndex: tab_bar.stack_index
+
+                Rectangle{
+                    id : first_page
+                    color: "Black"
+                    anchors.fill: parent
+                    RowLayout{
+                        anchors.top : parent.top
+                        anchors.topMargin: (parent.height - 2 * (ports_combobox.height)  - spacing) / 2
+                        anchors.left: parent.left
+                        anchors.leftMargin: (parent.width - width) / 2
+                        ColumnLayout{
+                            Text {
+                                text: qsTr("Port:")
+                                color: "white"
+                                font.family: "Helvetica"
+                                font.pointSize: 14
+                            }
+                            Text {
+                                text: qsTr("Parity:")
+                                color: "white"
+                                font.family: "Helvetica"
+                                font.pointSize: 14
+                            }
+                        }
+                        ColumnLayout{
+                            CustomComboBox {
+                                id: ports_combobox
+                                model: ["COM1", "COM2", "COM3"]
+                            }
+                            CustomComboBox {
+                                model: ["None", "EvenParity", "OddParity", "SpaceParity", "MarkParity"]
+                            }
+                        }
+                        ColumnLayout{
+                            Layout.leftMargin: 40
+                            Text {
+                                text: qsTr("Baudrate:")
+                                color: "white"
+                                font.family: "Helvetica"
+                                font.pointSize: 14
+                            }
+                            Text {
+                                text: qsTr("Stop bits:")
+                                color: "white"
+                                font.family: "Helvetica"
+                                font.pointSize: 14
+                            }
+                        }
+                        ColumnLayout{
+                            CustomComboBox {
+                                model: ["9600", "115200"]
+                            }
+
+                            CustomComboBox {
+                                model: ["1", "1.5", "2"]
+                            }
+                        }
+                        ColumnLayout{
+                            Layout.leftMargin: 40
+                            Text {
+                                text: qsTr("Data bits:")
+                                color: "white"
+                                font.family: "Helvetica"
+                                font.pointSize: 14
+                            }
+                            Text {
+                                text: qsTr("Flow control:")
+                                color: "white"
+                                font.family: "Helvetica"
+                                font.pointSize: 14
+                            }
+                        }
+                        ColumnLayout{
+                            CustomComboBox {
+                                model: ["5", "6", "7", "8"]
+                            }
+                            CustomComboBox {
+                                model: ["None", "Hardware", "Software"]
+                            }
+                        }
+                    }
+
+                    Button{
+                        id: open_serial_port_button
+                        objectName: "open_serial_port_button"
+                        y: parent.height * 0.8
+                        x : 100
+                        text: "Open"
+
+                        signal openSerialPort()
+                        onPressed: openSerialPort()
+                    }
+                    Button{
+                        objectName: "close_serial_port_button"
+                        y: parent.height * 0.8
+                        x : 300
+                        text: "Close"
+
+                        signal closeSerialPort()
+                        onPressed: closeSerialPort()
+                    }
+                }
+                Rectangle{
+                    color: "Black"
+                    implicitWidth: 20
+                    implicitHeight: 200
+                }
+                Rectangle{
+                    color: "green"
+                    implicitWidth: 20
+                    implicitHeight: 200
                 }
 
             }
-
-
         }
     }
-
 }
