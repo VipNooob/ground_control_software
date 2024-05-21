@@ -19,7 +19,7 @@ Window {
     Connections {
         target: Sinstance
         onSendSerialPortsInfo: {
-            console.log(portsInfo[0].portName);
+            // console.log(portsInfo[0].portName);
         }
     }
 
@@ -102,6 +102,37 @@ Window {
             // Adjust the delay (e.g., 100) based on your application's needs
             Qt.callLater(createChargeBarIfInitialized, 100)
         }
+    }
+
+    function findListModelElementIndex(model, element){
+
+        for (var i = 0; i < model.count; i++){
+
+            if (model.get(i).text === element){
+                return i;
+            }
+
+        }
+        return -1;
+    }
+
+    function findListModelNextIndex(model, element){
+        for (var i = 0; i < model.count; i++){
+
+            if (model.get(i).text.localeCompare(element) === 1){
+                return i;
+            }
+        }
+        return model.count;
+    }
+
+    function printall(model){
+        console.log("before")
+        for (var i = 0; i < model.count; i++){
+            console.log(model.get(i).text)
+
+        }
+        console.log("after")
     }
 
     // setup a timer to update time string every second
@@ -793,7 +824,76 @@ Window {
                         ColumnLayout{
                             CustomComboBox {
                                 id: ports_combobox
-                                model: ["COM1", "COM2", "COM3"]
+                                model: ListModel {
+                                    id: model
+                                }
+
+                                Connections {
+                                    target: Sinstance
+
+                                    onSendSerialPortsInfo: {
+
+                                        // In order to visualize only relevant ports
+                                        // It's required to add new ports
+                                        // and also delete old ports
+
+                                        // To reach the following functionality
+                                        // We can use Set substraction
+                                        // newPorts = SetA - SetB
+                                        // toDeletePorts = SetB - SetA
+
+                                        var addSet = []
+                                        var deleteSet = []
+
+                                        // Filling sets
+                                        for (var i = 0; i < portsInfo.length; i++){
+                                            addSet.push(portsInfo[i].portName)
+                                        }
+
+                                        for (i = 0; i < ports_combobox.model.count; i++){
+                                            deleteSet.push(ports_combobox.model.get(i).text)
+                                        }
+
+                                        // Getting new ports
+                                        for (i = 0; i < ports_combobox.model.count; i++){
+
+                                            let indexOfRemovableElement = addSet.indexOf(ports_combobox.model.get(i).text);
+
+                                            if (indexOfRemovableElement > -1){
+                                                addSet.splice(indexOfRemovableElement, 1);
+                                            }
+                                        }
+
+                                        // Getting ports to delete
+                                        for (i = 0; i < portsInfo.length; i++){
+                                            let indexOfRemovableElement = deleteSet.indexOf(portsInfo[i].portName);
+
+                                            if (indexOfRemovableElement > -1){
+                                                deleteSet.splice(indexOfRemovableElement, 1);
+                                            }
+                                        }
+
+                                        // Adding new ports in descending order to ComboBox
+                                        for (i = 0; i < addSet.length; i++){
+                                            let indextToInsert = findListModelNextIndex(ports_combobox.model, addSet[i]);
+
+                                            ports_combobox.model.insert(indextToInsert, {text: addSet[i]});
+
+                                        }
+
+                                        // Deletion old ports from ComboBox
+                                        for (i = 0; i < deleteSet.length; i++){
+                                            let indexOfRemovableElement = findListModelElementIndex(ports_combobox.model, deleteSet[i]);
+
+                                            if (indexOfRemovableElement > -1){
+                                                ports_combobox.model.remove(indexOfRemovableElement);
+                                            }
+                                        }
+
+                                    }
+                                }
+
+
                             }
                             CustomComboBox {
                                 model: ["None", "EvenParity", "OddParity", "SpaceParity", "MarkParity"]
@@ -816,9 +916,21 @@ Window {
                         }
                         ColumnLayout{
                             CustomComboBox {
-                                model: ["9600", "115200"]
-                            }
+                                id: baudrate_combobox
+                                objectName: "baudrate_combobox"
 
+                                Connections {
+                                    target: Sinstance
+                                    onSendBaudRates: {
+                                        baudrate_combobox.model = baudrates;
+                                        for (var i = 0; i < baudrate_combobox.model.length; i++){
+                                            if (baudrate_combobox.model[i] === 115200){
+                                                baudrate_combobox.currentIndex = i;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                             CustomComboBox {
                                 model: ["1", "1.5", "2"]
                             }
@@ -841,6 +953,7 @@ Window {
                         ColumnLayout{
                             CustomComboBox {
                                 model: ["5", "6", "7", "8"]
+                                currentIndex: 3
                             }
                             CustomComboBox {
                                 model: ["None", "Hardware", "Software"]

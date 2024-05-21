@@ -13,6 +13,7 @@
 
 int main(int argc, char *argv[])
 {
+
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QApplication app(argc, argv);
@@ -30,16 +31,11 @@ int main(int argc, char *argv[])
     QObject* openSerialPortButtonPointer = engine.rootObjects().first()->findChild<QQuickItem*>("open_serial_port_button");
     QObject* closeSerialPortButtonPointer = engine.rootObjects().first()->findChild<QQuickItem*>("close_serial_port_button");
 
-    // make sure that needed object has been found
-    if (openSerialPortButtonPointer) {
-        qDebug() << "Found QML object with objectName 'open_serial_port_button'";
-    } else {
-        qDebug() << "Could not find the 'open_serial_port_button' object!";
-    }
-
-    QObject::connect(cppSingelton, SIGNAL(sendSerialPortsInfo(QVariantList)), mainWindowPointer, SLOT(onSendSerialPortsInfo(QVariantList)));
     QObject::connect(openSerialPortButtonPointer, SIGNAL(openSerialPort()), cppSingelton, SLOT(onOpenSerialPort()));
     QObject::connect(closeSerialPortButtonPointer, SIGNAL(closeSerialPort()), cppSingelton, SLOT(onCloseSerialPort()));
+
+
+    cppSingelton->emitInitialSignals();
 
     if (engine.rootObjects().isEmpty())
         return -1;

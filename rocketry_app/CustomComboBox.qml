@@ -9,8 +9,7 @@ import QtCharts 2.1
 
 ComboBox {
     id: control
-    model: ["First", "Second", "Third"]
-
+    model: []
     delegate: ItemDelegate {
         id: delegated_item
         width: control.width

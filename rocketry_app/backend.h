@@ -29,14 +29,17 @@ public:
     explicit Backend(QObject* parent = nullptr);
     static QObject* createSingletonInstance(QQmlEngine* engine,  QJSEngine* scriptEngine);
     static Backend* getInstance(QObject* parent = nullptr);
+    void emitInitialSignals();
 
 signals:
     void sendSerialPortsInfo(QVariantList portsInfo);
+    void sendBaudRates(QVariantList baudrates);
+
 
 public slots:
     void onOpenSerialPort();
     void onCloseSerialPort();
-    void updateSerialPortsInfo();
+    void onUpdateSerialPortsTimerTimeout();
 };
 
 #endif // BACKEND_H
